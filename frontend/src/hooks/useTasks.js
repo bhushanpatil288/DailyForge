@@ -8,7 +8,7 @@ const useTasks = () => {
   const getTasks = async () => {
     try {
       const tasks = await api.get("/tasks");
-      setTasks(tasks.data.tasks);
+      setTasks(tasks.data.data || []);
     } catch (error) {
       console.log(error?.response?.data?.message || "Failed to load tasks");
     }
@@ -38,7 +38,7 @@ const useTasks = () => {
   const deleteTask = async (id) => {
     await api.delete(`/tasks/${id}`);
     // fix : This line refreshes the UI!
-    setTasks(prev => prev.filter(t => t._id !== id)); 
+    setTasks(prev => prev.filter(t => t._id !== id));
   };
 
   // initial fetch
