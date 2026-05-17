@@ -53,9 +53,9 @@ export default function RoutineBuilder() {
     try {
       setLoadingRoutines(true);
       const res = await api.get("/routines");
-      // res.data.routines is the array you need
+      // res.data.data is the array you need
       setSavedRoutines(
-        Array.isArray(res.data.routines) ? res.data.routines : []
+        Array.isArray(res.data.data) ? res.data.data : []
       );
     } catch (err) {
       console.error(err);
@@ -110,10 +110,10 @@ export default function RoutineBuilder() {
   /* ---------------- DRAG END HANDLER ---------------- */
 
   // Removing Schedule task after drag
-  const removeScheduledTask = (taskId , day) => {
+  const removeScheduledTask = (taskId, day) => {
 
     //filtering out 
-    setScheduledTasks((prevTasks) => 
+    setScheduledTasks((prevTasks) =>
       prevTasks.filter((task) => {
         return !(task.taskId === taskId && task.day === day);
       })

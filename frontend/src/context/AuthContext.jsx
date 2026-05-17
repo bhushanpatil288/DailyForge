@@ -24,7 +24,7 @@ const AuthProvider = ({ children }) => {
       api
         .get("/auth/me")
         .then((res) => {
-          setUser(res.data.user);
+          setUser(res.data.data);
         })
         .catch(() => {
           // token invalid or expired

@@ -22,7 +22,7 @@ export default function Dashboard() {
   const { tasks, updateTask } = useTasks();
 
   const today = new Date();
- 
+
 
   //quotes array and random selection
   const motivationalQuotes = [
@@ -81,7 +81,7 @@ export default function Dashboard() {
     try {
       setLoadingRoutines(true);
       const res = await api.get("/routines");
-      setSavedRoutines(res.data.routines || []);
+      setSavedRoutines(res.data.data || []);
     } catch (err) {
       console.error(err);
       setSavedRoutines([]);
@@ -99,29 +99,29 @@ export default function Dashboard() {
       {/* Header */}
       <header className="animate-in flex flex-col lg:flex-row justify-between items-start lg:items-center p-6 shadow-md rounded-xl bg-(--surface) gap-4">
         {/* Display time */}
-       <div className="w-full">
-  <h1 className="text-2xl font-semibold text-main leading-tight">
-    {getGreeting()}, {user?.name}
-  </h1>
+        <div className="w-full">
+          <h1 className="text-2xl font-semibold text-main leading-tight">
+            {getGreeting()}, {user?.name}
+          </h1>
 
-  <p className="text-sm italic text-primary mt-2">
-    "{quote}"
-  </p>
+          <p className="text-sm italic text-primary mt-2">
+            "{quote}"
+          </p>
 
-  <div className="flex justify-between items-center mt-1 w-full">
-    <p className="text-sm text-muted">
-      {new Date()
-        .toLocaleDateString("en-US", {
-          weekday: "long",
-          day: "2-digit",
-          month: "short",
-        })
-        .replace(",", " ·")}
-    </p>
+          <div className="flex justify-between items-center mt-1 w-full">
+            <p className="text-sm text-muted">
+              {new Date()
+                .toLocaleDateString("en-US", {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "short",
+                })
+                .replace(",", " ·")}
+            </p>
 
-    <LiveClock />
-  </div>
-</div>
+            <LiveClock />
+          </div>
+        </div>
       </header>
 
       {/* Stats Row */}
