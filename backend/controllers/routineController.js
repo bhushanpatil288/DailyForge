@@ -1,5 +1,6 @@
 import Routine from "../src/models/Routine.js";
 import User from "../src/models/User.js";
+import { apiResponse } from "../utils/apiResponse.js";
 import { checkOverlap } from "../utils/routineUtils.js";
 
 // Create routine function
@@ -9,17 +10,13 @@ export const createRoutine = async (req, res) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized, user not logged in" });
+      return apiResponse(res, 401, false, "Unauthorized, user not logged in");
     }
 
     // fetch routine details from request body
     const { name, description, items } = req.body;
     if (!name || items.length == 0 || !items) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please enter required details" });
+      return apiResponse(res, 400, false, "Please enter required details");
     }
 
     // calculate endtime for each task
@@ -28,10 +25,7 @@ export const createRoutine = async (req, res) => {
 
       // check duration greater than 10 mins
       if (!item.duration || item.duration < 10) {
-        return res.status(400).json({
-          success: false,
-          message: "Each task duration must be at least 10 minutes",
-        });
+        return apiResponse(res, 400, false, "Each task duration must be at least 10 minutes");
       }
 
       const endTime = item.startTime + item.duration;
@@ -60,10 +54,7 @@ export const createRoutine = async (req, res) => {
 
       // compare each task with next task
       if (checkOverlap(tasks)) {
-        return res.status(400).json({
-          success: false,
-          message: `Tasks overlap on ${day}`,
-        });
+        return apiResponse(res, 400, false, `Tasks overlap on ${day}`);
       }
     }
 
@@ -77,18 +68,11 @@ export const createRoutine = async (req, res) => {
 
     // save routine in collection
     await newRoutine.save();
-    return res
-      .status(200)
-      .json(
-        { success: true, message: "Routine added successfully" },
-        newRoutine
-      );
+    return apiResponse(res, 200, true, "Routine added successfully", newRoutine)
   } catch (error) {
     // error handling
     console.log("Error creating routine", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error creating routine" });
+    return apiResponse(res, 500, false, "Error creating routine");
   }
 };
 
@@ -99,9 +83,7 @@ export const getRoutines = async (req, res) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized, user not logged in" });
+      return apiResponse(res, 401, false, "Unauthorized, user not logged in");
     }
 
     // fetch routines from database
@@ -109,15 +91,13 @@ export const getRoutines = async (req, res) => {
       createdAt: -1,
     });
     if (routines.length == 0) {
-      return res.status(400).json({ message: "User has no routine", success: false });
+      return apiResponse(res, 400, false, "User has no routine");
     }
-    return res.status(200).json({ success: true, routines });
+    return apiResponse(res, 200, true, "Routines fetched successfully", routines);
   } catch (error) {
     // error handling
     console.log("Error fetching routine", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error fetching routine" });
+    return apiResponse(res, 500, false, "Error fetching routine");
   }
 };
 
@@ -128,9 +108,7 @@ export const updateRoutine = async (req, res) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized, user not logged in" });
+      return apiResponse(res, 401, false, "Unauthorized, user not logged in");
     }
 
     // fetch updated routine details
@@ -167,10 +145,7 @@ export const updateRoutine = async (req, res) => {
 
         // compare each task with next task
         if (checkOverlap(tasks)) {
-          return res.status(400).json({
-            success: false,
-            message: `Tasks overlap on ${day}`,
-          });
+          return apiResponse(res, 400, false, `Tasks overlap on ${day}`);
         }
       }
     }
@@ -182,20 +157,14 @@ export const updateRoutine = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!updatedRoutine) {
-      return res.status(404).json({
-        message: "Routine not found",
-      });
+      return apiResponse(res, 404, false, "Routine not found");
     }
-    return res.status(200).json({
-      message: "Routine updated successfully",
-      routine: updatedRoutine,
-    });
+
+    return apiResponse(res, 200, true, "Routine updated successfully", updatedRoutine);
   } catch (error) {
     // error handling
     console.log("Error updating routine", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error updating routine" });
+    return apiResponse(res, 500, false, "Error updating routine");
   }
 };
 
@@ -206,9 +175,7 @@ export const deleteRoutine = async (req, res) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized, user not logged in" });
+      return apiResponse(res, 401, false, "Unauthorized, user not logged in");
     }
 
     // fetch routine id
@@ -220,18 +187,12 @@ export const deleteRoutine = async (req, res) => {
       userId: userId,
     });
     if (!deleteRoutine) {
-      return res.status(404).json({
-        message: "Routine not found",
-      });
+      return apiResponse(res, 404, false, "Routine not found");
     }
-    return res.status(200).json({
-      message: "Routine deleted successfully",
-    });
+    return apiResponse(res, 200, true, "Routine deleted successfully");
   } catch (error) {
     // error handling
     console.log("Error deleting routine", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error deleting routine" });
+    return apiResponse(res, 500, false, "Error deleting routine");
   }
 };
